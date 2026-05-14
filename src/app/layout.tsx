@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+﻿import type { Metadata } from "next";
+import { JetBrains_Mono, Sora } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/components/QueryProvider";
 
-const geist = Geist({ subsets: ["latin"] });
+const sora = Sora({ subsets: ["latin"], variable: "--font-body" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-code" });
 
 export const metadata: Metadata = {
   title: "Solis Planner",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${geist.className} antialiased`}>
+      <body className={`${sora.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

@@ -1,5 +1,6 @@
-import { createClient } from "@/lib/supabase/client";
+﻿import { createClient } from "@/lib/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Block } from "@/components/blocks/types";
 
 const supabase = createClient();
 
@@ -34,10 +35,7 @@ async function upsertTab<T extends Record<string, unknown>>(
 export type Initiation = {
   id: string;
   project_id: string;
-  objectives: string | null;
-  stakeholders: string | null;
-  feasibility_notes: string | null;
-  budget_estimate: number | null;
+  blocks: Block[] | null;
 };
 
 export function useInitiation(projectId: string) {
@@ -61,10 +59,7 @@ export function useSaveInitiation(projectId: string) {
 export type Planning = {
   id: string;
   project_id: string;
-  scope: string | null;
-  timeline: string | null;
-  risks: string | null;
-  resources: string | null;
+  blocks: Block[] | null;
 };
 
 export function usePlanning(projectId: string) {
@@ -88,9 +83,8 @@ export function useSavePlanning(projectId: string) {
 export type Execution = {
   id: string;
   project_id: string;
-  progress_notes: string | null;
-  blockers: string | null;
-  completion_percentage: number | null;
+  completion_percentage?: number | null;
+  blocks: Block[] | null;
 };
 
 export function useExecution(projectId: string) {
@@ -114,10 +108,8 @@ export function useSaveExecution(projectId: string) {
 export type Closing = {
   id: string;
   project_id: string;
-  deliverables: string | null;
-  lessons_learned: string | null;
-  final_notes: string | null;
-  closed_at: string | null;
+  closed_at?: string | null;
+  blocks: Block[] | null;
 };
 
 export function useClosing(projectId: string) {

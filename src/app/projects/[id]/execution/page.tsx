@@ -1,37 +1,45 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useExecution, useSaveExecution } from "@/lib/queries/tabs";
 import TabShell from "@/components/TabShell";
-import { TextArea } from "@/components/fields";
+import BlockBuilder from "@/components/blocks/BlockBuilder";
+import type { Block } from "@/components/blocks/types";
 
 export default function ExecutionPage() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useExecution(id);
   const { mutate: save, isPending } = useSaveExecution(id);
 
-  const [progressNotes, setProgressNotes] = useState("");
-  const [blockers,      setBlockers]      = useState("");
-  const [completion,    setCompletion]    = useState(0);
-  const [isDirty,       setIsDirty]       = useState(false);
-  const [lastSaved,     setLastSaved]     = useState<string | null>(null);
+  const [blocks, setBlocks] = useState<Block[]>([]);
+  const [completion, setCompletion] = useState(0);
+  const [isDirty, setIsDirty] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
 
   useEffect(() => {
     if (data) {
-      setProgressNotes(data.progress_notes ?? "");
-      setBlockers(data.blockers ?? "");
+      setBlocks(data.blocks || []);
       setCompletion(data.completion_percentage ?? 0);
+      setLastSaved(data ? new Date().toISOString() : null);
     }
   }, [data]);
 
   function handleSave() {
-    save({ progress_notes: progressNotes, blockers, completion_percentage: completion }, {
+    save({ blocks, completion_percentage: completion }, {
       onSuccess: () => { setIsDirty(false); setLastSaved(new Date().toISOString()); },
     });
   }
 
-  if (isLoading) return <div className="animate-pulse flex flex-col gap-5">{[...Array(3)].map((_, i) => <div key={i} className="h-28 bg-stone-900 border border-stone-800 rounded-xl" />)}</div>;
+  if (isLoading) {
+    return (
+      <div className="animate-pulse flex flex-col gap-5">
+        {[...Array(2)].map((_, i) => (
+          <div key={i} className="h-40 neu-inset" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <TabShell
@@ -42,12 +50,11 @@ export default function ExecutionPage() {
       isDirty={isDirty}
       lastSaved={lastSaved}
     >
-      {/* Completion slider */}
       <div>
-        <label className="block text-sm font-medium text-stone-300 mb-1">
-          Completion — <span className="text-amber-400 font-bold">{completion}%</span>
+        <label className="block text-sm font-medium text-ink mb-1">
+          Completion — <span className="text-amber-800 font-bold">{completion}%</span>
         </label>
-        <p className="text-stone-500 text-xs mb-3">Drag to update overall project progress.</p>
+        <p className="text-muted text-xs mb-3">Drag to update overall project progress.</p>
         <div className="relative">
           <input
             type="range"
@@ -55,23 +62,29 @@ export default function ExecutionPage() {
             max={100}
             value={completion}
             onChange={(e) => { setCompletion(Number(e.target.value)); setIsDirty(true); }}
-            className="w-full accent-amber-400 cursor-pointer"
+            className="w-full accent-amber-600 cursor-pointer"
           />
-          <div className="flex justify-between text-xs text-stone-600 mt-1">
+          <div className="flex justify-between text-xs text-muted-2 mt-1">
             <span>0%</span><span>50%</span><span>100%</span>
           </div>
         </div>
-        {/* Progress bar */}
-        <div className="mt-3 h-2 bg-stone-800 rounded-full overflow-hidden">
+        <div className="mt-3 h-2 bg-shadow/50 rounded-full overflow-hidden shadow-neu-inset">
           <div
-            className="h-full bg-amber-400 rounded-full transition-all duration-300"
+            className="h-full bg-amber-600 rounded-full transition-all duration-300"
             style={{ width: `${completion}%` }}
           />
         </div>
       </div>
 
-      <TextArea label="Progress notes" hint="What has been completed so far?" value={progressNotes} onChange={(v) => { setProgressNotes(v); setIsDirty(true); }} rows={5} placeholder="e.g. Completed API integration, deployed to staging…" />
-      <TextArea label="Blockers" hint="What is slowing things down or needs resolution?" value={blockers} onChange={(v) => { setBlockers(v); setIsDirty(true); }} rows={4} placeholder="e.g. Waiting on client approval for design assets…" />
+      <div className="neu-divider my-4" />
+
+      <BlockBuilder
+        blocks={blocks}
+        onChange={(newBlocks) => {
+          setBlocks(newBlocks);
+          setIsDirty(true);
+        }}
+      />
     </TabShell>
   );
 }

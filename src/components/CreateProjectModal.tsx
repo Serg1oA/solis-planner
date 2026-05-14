@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCreateProject } from "@/lib/queries/projects";
 
 type Props = {
@@ -13,12 +13,10 @@ export default function CreateProjectModal({ open, onClose }: Props) {
   const [description, setDescription] = useState("");
   const { mutate, isPending, error } = useCreateProject();
 
-  // Reset form when modal opens
   useEffect(() => {
     if (open) { setName(""); setDescription(""); }
   }, [open]);
 
-  // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
@@ -35,15 +33,15 @@ export default function CreateProjectModal({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/20 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-stone-900 border border-stone-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+      <div className="neu-panel w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-white">New project</h2>
+          <h2 className="text-lg font-semibold text-ink">New project</h2>
           <button
             onClick={onClose}
-            className="text-stone-500 hover:text-stone-300 transition-colors text-xl leading-none"
+            className="text-muted hover:text-ink transition-colors text-xl leading-none"
           >
             ×
           </button>
@@ -51,48 +49,48 @@ export default function CreateProjectModal({ open, onClose }: Props) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-stone-400 mb-1.5">
-              Project name <span className="text-amber-400">*</span>
+            <label className="block text-sm text-muted mb-1.5">
+              Project name <span className="text-amber-700">*</span>
             </label>
             <input
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-stone-800 border border-stone-700 rounded-lg px-4 py-2.5 text-white text-sm placeholder-stone-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
+              className="w-full neu-input px-4 py-2.5 text-sm"
               placeholder="e.g. Website Redesign"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-stone-400 mb-1.5">
+            <label className="block text-sm text-muted mb-1.5">
               Description{" "}
-              <span className="text-stone-600 text-xs">(optional)</span>
+              <span className="text-muted-2 text-xs">(optional)</span>
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full bg-stone-800 border border-stone-700 rounded-lg px-4 py-2.5 text-white text-sm placeholder-stone-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors resize-none"
+              className="w-full neu-input px-4 py-2.5 text-sm resize-none"
               placeholder="What is this project about?"
             />
           </div>
 
           {error && (
-            <p className="text-red-400 text-sm">{(error as Error).message}</p>
+            <p className="text-red-700 text-sm">{(error as Error).message}</p>
           )}
 
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
+              className="neu-button flex-1 px-4 py-2.5 text-sm font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPending || !name.trim()}
-              className="flex-1 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed text-stone-950 font-semibold rounded-lg px-4 py-2.5 text-sm transition-colors"
+              className="neu-button flex-1 px-4 py-2.5 text-sm font-semibold text-amber-900"
             >
               {isPending ? "Creating…" : "Create project"}
             </button>
